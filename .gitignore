@@ -18,3 +18,7 @@ venv
 *.swp
 
 VOCdevkit/
+
+data/
+gui/merge_data/
+gui/merge_data_TE2/

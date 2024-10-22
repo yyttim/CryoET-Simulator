@@ -33,7 +33,6 @@ class Network(ABC):
         """
         self.set_voi(voi)
         self.__vol = float((self.__voi > 0).sum()) * v_size * v_size * v_size # withou the float cast is my raise overflow warning in Windows
-
         self.__v_size = v_size
         self.__pl_occ = 0
         self.__pl = list()
@@ -244,7 +243,7 @@ class Network(ABC):
                     counts[id] = 0
         return counts
 
-    def perturb_vertices(self, poly_data, scale=0.3):
+    def perturb_vertices(self, poly_data, scale=0.1):
         points = poly_data.GetPoints()
         num_points = points.GetNumberOfPoints()
         new_points = vtk.vtkPoints()
@@ -263,7 +262,7 @@ class NetSAWLC(Network):
     Class for generating a network of SAWLC polymers
     """
 
-    def __init__(self, voi, v_size, l_length, m_surf, max_p_length, gen_pol_lengths, occ, over_tolerance=50,
+    def __init__(self, voi, v_size, l_length, m_surf, max_p_length, gen_pol_lengths, occ, over_tolerance=0,
                  poly=None, svol=None, tries_mmer=20, tries_pmer=200, rots=None, rot_id=0):
         """
         Construction
@@ -319,7 +318,7 @@ class NetSAWLC(Network):
         if self.__poly is not None:
             self._Network__poly_area = poly_surface_area(self.__poly)
 
-    def build_network(self, method_type=0, density_loop_num=0, pos_loop_num=0, single_mode=False, disturb=False, ct=None):
+    def build_network(self, method_type=0, loop_num=0, single_mode=False, disturb = False):
         """
         Add polymers following SAWLC model until an occupancy limit is passed
         :return:
@@ -342,11 +341,7 @@ class NetSAWLC(Network):
         if method_type == 4:
             # density
             method_type = 0
-            l_num = density_loop_num
-        elif method_type == 5:
-            # density
-            method_type = 0
-            l_num = pos_loop_num
+            l_num = loop_num
         # Network loop
         while (c_try <= self.__tries_pmer) and (self._Network__pl_occ < self.__occ):
             if l_num is not None and self.get_num_mmers() >= l_num:
@@ -367,26 +362,22 @@ class NetSAWLC(Network):
             elif method_type == 2:
                 # Generate p0 using gradient distribution
                 gradient = np.linspace(0, 1, num=self._Network__voi.shape[0])
-                p0 = np.array([
-                    gradient[random.randint(0, len(gradient) - 1)] * self._Network__voi.shape[0] * self._Network__v_size,
-                    gradient[random.randint(0, len(gradient) - 1)] * self._Network__voi.shape[1] * self._Network__v_size,
-                    gradient[random.randint(0, len(gradient) - 1)] * self._Network__voi.shape[2] * self._Network__v_size
-                ])
+                p0 = np.array([gradient[random.randint(0, len(gradient) - 1)] * self._Network__voi.shape[
+                    0] * self._Network__v_size,
+                               gradient[random.randint(0, len(gradient) - 1)] * self._Network__voi.shape[
+                                   1] * self._Network__v_size,
+                               gradient[random.randint(0, len(gradient) - 1)] * self._Network__voi.shape[
+                                   2] * self._Network__v_size])
             elif method_type == 3:
                 # Generate p0 using log-normal distribution
-                log_gradient = np.clip(np.random.lognormal(mean=0, sigma=1, size=self._Network__voi.shape[0]), 0, 1)
+                log_gradient = np.random.lognormal(mean=0, sigma=1, size=self._Network__voi.shape[0])
                 p0 = np.array([log_gradient[random.randint(0, len(log_gradient) - 1)] * self._Network__voi.shape[
                     0] * self._Network__v_size,
                                log_gradient[random.randint(0, len(log_gradient) - 1)] * self._Network__voi.shape[
                                    1] * self._Network__v_size,
                                log_gradient[random.randint(0, len(log_gradient) - 1)] * self._Network__voi.shape[
                                    2] * self._Network__v_size])
-            elif method_type == 5:
-                p0 = np.asarray((ct[0] * self._Network__v_size * random.random(),
-                                 ct[1] * self._Network__v_size * random.random(),
-                                 ct[2] * self._Network__v_size * random.random()))
 
-            # print("protein pos=", p0)
             max_length = self.__gen_pol_lengths.gen_length(0, self.__max_p_length)
             hold_rot = None
             if self.__rots is not None:
@@ -471,7 +462,7 @@ class NetSAWLC(Network):
 
 
 class NetOrgan(Network):
-    def __init__(self, voi, v_size, l_length, m_surf, max_p_length, gen_pol_lengths, occ, over_tolerance=100,
+    def __init__(self, voi, v_size, l_length, m_surf, max_p_length, gen_pol_lengths, occ, over_tolerance=0,
                  poly=None, svol=None, tries_mmer=20, tries_pmer=100, rots=None, rot_id=0):
         super(NetOrgan, self).__init__(voi, v_size, svol=svol)
 
@@ -523,9 +514,9 @@ class NetOrgan(Network):
                             self._Network__voi.shape[1],
                             self._Network__voi.shape[2]]) * self._Network__v_size / 6
 
-
         # Network loop
         while self.get_num_mmers() <= 0:
+
             # Polymer initialization
             c_try += 1
             if self.__poly:
@@ -539,14 +530,6 @@ class NetOrgan(Network):
                 p0 = np.random.normal(mean, std_dev)
                 p0 = np.clip(p0, [0, 0, 0],
                              np.array(self._Network__voi.shape) * self._Network__v_size)
-            elif method_type == 2:
-                p0 = np.asarray((self._Network__voi.shape[0] * self._Network__v_size * random.random(),
-                                 self._Network__voi.shape[1] * self._Network__v_size * random.random(),
-                                 self._Network__voi.shape[2] * self._Network__v_size * random.random()))
-
-                # p0 = np.asarray((0,
-                #                  0,
-                #                  0))
 
             max_length = self.__gen_pol_lengths.gen_length(0, self.__max_p_length)
             hold_rot = None
@@ -556,14 +539,15 @@ class NetOrgan(Network):
             if disturb:
                 self.__m_surf = self.perturb_vertices(self.__m_surf)
             if self.__poly is None:
-                hold_polymer = SAWLC(self.__l_length, self.__m_surf, p0, rot=None)
+                hold_polymer = SAWLC(self.__l_length, self.__m_surf, p0, rot=hold_rot)
             else:
                 hold_polymer = SAWLCPoly(self.__poly, self.__l_length, self.__m_surf, p0, rot=hold_rot)
-            if hold_polymer.get_monomer(-1).overlap_voi(self._Network__voi, self._Network__v_size, 0):
-                self._Network__pmer_fails += 1
-                print("!!!!overlap_voi", p0, hold_polymer._Polymer__m_surf.GetBounds())
-                continue
-            # self.add_monomer_to_voi(hold_polymer.get_monomer(-1), self._Network__svol)
+            # if hold_polymer.get_monomer(-1).overlap_voi(self._Network__voi, self._Network__v_size,
+            #                                             over_tolerance=self.__over_tolerance):
+            #     self._Network__pmer_fails += 1
+            #     print("!!!!overlap_voi")
+            #     continue
+            self.add_monomer_to_voi(hold_polymer.get_monomer(-1), self._Network__svol)
             if self.__rots is not None:
                 if rot_id >= len(self.__rots) - 1:
                     rot_id = 0
@@ -572,7 +556,7 @@ class NetOrgan(Network):
 
             # Polymer loop
             cont_pol = 1
-            not_finished = False
+            not_finished = True
             while not_finished:
                 hold_rot = None
                 if self.__rots is not None:
@@ -581,7 +565,7 @@ class NetOrgan(Network):
                                                             self._Network__v_size,
                                                             fix_dst=self.__gen_pol_lengths.gen_length(self.__l_length,
                                                                                                       2 * self.__l_length),
-                                                            rot=None)
+                                                            rot=hold_rot)
                 cont_pol += 1
 
                 if monomer_data is None:
@@ -614,9 +598,6 @@ class NetOrgan(Network):
             else:
                 self.add_polymer(hold_polymer, occ_mode='area')
                 c_try = 0
-
-            break
-        return p0
 
 
 class NetSAWLCInter(Network):

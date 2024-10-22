@@ -137,12 +137,12 @@ class TEM:
         mics = lio.load_mrc(self.__micgraphs_file)
 
         # Adding readout noise with Gaussian distribution to every micrograph
-        for i in range(mics.shape[2]):
-            mic = mics[:, :, i]
-            mask = mic > 0
-            mn = mic[mask].mean()
-            sg_fg = mn / snr
-            mics[:, :, i] = mic + np.random.normal(mn, sg_fg, mic.shape)
+        # for i in range(mics.shape[2]):
+        #     mic = mics[:, :, i]
+        #     mask = mic > 0
+        #     mn = mic[mask].mean()
+        #     sg_fg = mn / snr
+        #     mics[:, :, i] = mic + np.random.normal(mn, sg_fg, mic.shape)
 
         # Update micrographs file
         lio.write_mrc(mics, self.__micgraphs_file)

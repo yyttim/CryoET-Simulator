@@ -75,6 +75,11 @@ def poly_translate(in_vtp, t):
     return tr_box.GetOutput()
 
 
+def get_center_of_polydata(poly_data):
+    bounds = poly_data.GetBounds()
+    center = [(bounds[0] + bounds[1]) / 2, (bounds[2] + bounds[3]) / 2, (bounds[4] + bounds[5]) / 2]
+    return center
+
 def poly_scale(in_vtp, s):
     """
     Applies scaling transformation to a vtkPolyData
