@@ -550,7 +550,7 @@ def all_features2(NTOMOS, VOI_SHAPE, OUT_DIR, VOI_OFFS, VOI_VSIZE, MMER_TRIES, P
             else:
                 snr = DETECTOR_SNR
             temic.add_detector_noise(snr)
-        #temic.invert_mics_den()
+        # temic.invert_mics_den()
         temic.set_header(data='mics', p_size=(VOI_VSIZE, VOI_VSIZE, VOI_VSIZE))
         temic.recon3D_imod()
         temic.set_header(data='rec3d', p_size=(VOI_VSIZE, VOI_VSIZE, VOI_VSIZE), origin=(0, 0, 0))

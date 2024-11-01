@@ -16,21 +16,21 @@ widget_out_dir = "/root/autodl-tmp/simulation"
 MEMBRANES_LIST = []
 HELIX_LIST = []
 PROTEINS_LIST = [
-	"/root/autodl-tmp/polnet//data/proteins/pns/3j9m.pns",
-	"/root/autodl-tmp/polnet//data/proteins/pns/8f69.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/3j9m.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/8f69.pns",
 
 	"/root/autodl-tmp/polnet//data/proteins/pns/4ug0.pns",
-	"/root/autodl-tmp/polnet//data/proteins/pns/8b6z.pns",
-	"/root/autodl-tmp/polnet//data/proteins/pns/1ubq.pns",
-	"/root/autodl-tmp/polnet//data/proteins/pns/5gjr.pns",
-	"/root/autodl-tmp/polnet//data/proteins/pns/1hkb.pns",
-	"/root/autodl-tmp/polnet//data/proteins/pns/3bjf.pns",
-	"/root/autodl-tmp/polnet//data/proteins/pns/1s3x.pns",
-	"/root/autodl-tmp/polnet//data/proteins/pns/7l7j.pns",
-	"/root/autodl-tmp/polnet//data/proteins/pns/2c9v.pns",
-	"/root/autodl-tmp/polnet//data/proteins/pns/2f8a.pns",
-	"/root/autodl-tmp/polnet//data/proteins/pns/5p21.pns",
-	"/root/autodl-tmp/polnet//data/proteins/pns/6pnz.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/8b6z.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/1ubq.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/5gjr.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/1hkb.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/3bjf.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/1s3x.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/7l7j.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/2c9v.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/2f8a.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/5p21.pns",
+	# "/root/autodl-tmp/polnet//data/proteins/pns/6pnz.pns",
 ]
 # 蛋白质开启扰动开关
 PROTEINS_LIST_DISTRIBUTED = [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0]
@@ -52,10 +52,10 @@ ORGANELLE_LIST = [
 # 细胞器开启扰动开关
 ORGANELLE_LIST_DISTRIBUTED = False
 
-ntomos_widget = 3
+ntomos_widget = 1
 voi_shape1 = 500
 voi_shape2 = 500
-voi_shape3 = 200
+voi_shape3 = 300
 voi_off_widget_1 = 4
 voi_off_widget_2 = voi_shape1 - voi_off_widget_1
 voi_off_widget_3 = 4
@@ -66,14 +66,11 @@ voi_size_widget = 1
 mmer_tries_widget = 200
 pmer_tries_widget = 1000
 surf_dec_widget = 0.5
-#malign_mn_widget = 1
-#malign_mx_widget = 1.5
-#malign_sg_widget = 0.2
-malign_mn_widget = 0
-malign_mx_widget = 0
-malign_sg_widget = 0
-detector_snr_widget_low = 100
-detector_snr_widget_high = 100
+malign_mn_widget = 1
+malign_mx_widget = 1.5
+malign_sg_widget = 0.2
+detector_snr_widget_low = 1
+detector_snr_widget_high = 2
 widget_min = -60
 widget_max = 61
 widget_paso = 2
